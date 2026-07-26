@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@clerk/fastify": "^3.1.56",
     "fastify": "^5.10.0"
   },
   "devDependencies": {

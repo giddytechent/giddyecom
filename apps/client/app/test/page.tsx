@@ -1,0 +1,42 @@
+import { auth } from "@clerk/nextjs/server"
+// import { headers } from "next/headers"
+
+export default async function TestPage() {
+
+    const { getToken } = await auth()
+    const token = await getToken()
+
+    console.log(token)
+
+    const resProduct = await fetch("http://localhost:8000/test", {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    
+    const dataProduct = await resProduct.json()
+    console.log(dataProduct)
+
+    const resOrder = await fetch("http://localhost:8001/test", {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    
+    const dataOrder = await resOrder.json()
+    console.log(dataOrder)
+
+    
+    const resPayment = await fetch("http://localhost:8002/test", {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    
+    const dataPayment = await resPayment.json()
+    console.log(dataPayment)
+
+    return (
+        <div>test page</div>
+    )
+}
