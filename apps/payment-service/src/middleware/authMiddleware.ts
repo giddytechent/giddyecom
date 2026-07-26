@@ -6,15 +6,15 @@ export const shouldBeUser = createMiddleware<{
     userId: string
   }
 }>(async (c,next)=>{
-    const auth = getAuth(c)
+   const { userId } = getAuth(c)
 
-  if (!auth?.userId) {
+  if (!userId) {
     return c.json({
       message: 'Payment service is not authenticated.',
     })
   }
 
-  c.set("userId",auth.userId)
+  c.set("userId",userId)
 
   await next()
 })
