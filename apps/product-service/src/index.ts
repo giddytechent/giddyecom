@@ -1,8 +1,10 @@
-import express, { Request, Response } from "express"
+import express, { NextFunction, Request, Response } from "express"
 import cors from "cors"
 
-import { clerkClient, clerkMiddleware, getAuth } from '@clerk/express'
-import { shouldBeUser } from "./middleware/authMiddleware.js"
+import {  clerkMiddleware } from '@clerk/express'
+import { shouldBeUser } from "./middleware/authMiddleware"
+import productRouter from "./routes/product.route"
+import categoryRouter from "./routes/category.route"
 
 const app = express()
 app.use(cors({
@@ -10,7 +12,9 @@ app.use(cors({
     credentials: true
 }))
 
+
 app.use(clerkMiddleware())
+app.use(express.json())
 
 app.get("/health", (req: Request, res: Response) => {
     res.json({
@@ -25,6 +29,15 @@ app.get("/test", shouldBeUser, async (req, res) => {
         message: "Product service autheticated",
         userId: req.userId
     })
+})
+
+app.use("/categories", categoryRouter)
+app.use("/products", productRouter)
+
+
+app.use((err:any, req:Request, res:Response, next:NextFunction)=>{
+    console.log(err)
+    return res.status(err.status || 500).json({message:err.message || "Internal Server Error!"})
 })
 
 app.listen(8000, () => {
