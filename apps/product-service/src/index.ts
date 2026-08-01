@@ -26,7 +26,7 @@ app.get("/health", (req: Request, res: Response) => {
 
 app.get("/test", shouldBeUser, async (req, res) => {
     res.json({
-        message: "Product service autheticated",
+        message: "Product service is autheticated",
         userId: req.userId
     })
 })
