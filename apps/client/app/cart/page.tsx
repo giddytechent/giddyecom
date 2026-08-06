@@ -1,13 +1,13 @@
 "use client"
 
-import PaymentForm from "@/components/PaymentForm"
 import ShippingForm from "@/components/ShippingForm"
 import { ArrowRight, Trash2 } from "lucide-react"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
-import type { ShippingFormInputs } from "@/types/types"
+import type { ShippingFormInputs } from "@repo/types"
 import useCartStore from "@/components/stores/cartStores"
+import StripePaymentForm from "@/components/StripePaymentForm"
 
 const steps = [
     {
@@ -116,7 +116,12 @@ export default function CartPage() {
                                 <div className="flex gap-8">
                                     {/* IMAGE  */}
                                     <div className="relative w-32 h-32 bg-gray-50 rounded-lg overflow-hidden">
-                                        <Image src={item.images?.[item.selectedColor as keyof typeof item.images] || ""} alt={item.name} fill className="object-contain" />
+                                        <Image 
+                                        src={
+                                            (item.images as Record<string, string>)?.[item.selectedColor] || ""} 
+                                        alt={item.name} 
+                                        fill 
+                                        className="object-contain" />
                                     </div>
                                     {/* ITEM DETAILS  */}
                                     <div className="flex flex-col justify-between">
@@ -134,7 +139,10 @@ export default function CartPage() {
                                     <Trash2 className="w-3 h-3" />
                                 </button>
                             </div>
-                        ))) : activeStep === 2 ? <ShippingForm setShippingForm={setShippingForm} /> : activeStep === 3 && shippingForm ? <PaymentForm /> : <p className="text-sm text-gray-500">Please fill in shipping form to continue.</p>}
+                        ))) : activeStep === 2 ? <ShippingForm setShippingForm={setShippingForm} /> : activeStep === 3 && shippingForm ?(
+                            <StripePaymentForm shippingForm={shippingForm} />
+                        ) 
+                        : (<p className="text-sm text-gray-500">Please fill in shipping form to continue.</p>)}
                 </div>
                 {/* DETAILS  */}
                 <div className="w-full lg:w-5/12 shadow-lg border border-gray-100 p-8 rounded-lg flex-col gap-8 h-max">
