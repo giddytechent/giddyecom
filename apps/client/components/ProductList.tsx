@@ -12,7 +12,7 @@ const products: ProductsType = [
             "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
         description:
             "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
-        price: 39.9,
+        price: 10,
         sizes: ["s", "m", "l", "xl", "xxl"],
         colors: ["gray", "purple", "green"],
         images: {
@@ -59,7 +59,7 @@ const products: ProductsType = [
         updatedAt: new Date(),      
     },
     {
-        id: 4,
+        id: 123,
         name: "Nike Dri Flex T-Shirt",
         shortDescription:
             "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
