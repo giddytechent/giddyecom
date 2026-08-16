@@ -44,4 +44,18 @@ sessionRoute.post('/create-checkout-session', shouldBeUser, async (c) => {
   }
 });
 
+sessionRoute.get("/:session_id", async (c)=> {
+  const {session_id} = c.req.param()
+  const session = await stripe.checkout.sessions.retrieve(session_id as string,{
+    expand:["line_items"]
+  })
+
+  console.log(session)
+
+  return c.json({
+    status:session.status,
+    paymentStatus:session.payment_status
+  })
+})
+
 export default sessionRoute

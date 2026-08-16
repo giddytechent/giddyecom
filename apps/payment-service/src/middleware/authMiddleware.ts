@@ -10,9 +10,7 @@ export const shouldBeUser = createMiddleware<{
    const auth = getAuth(c)
 
   if (!auth?.userId) {
-    return c.json({
-      message: 'Payment service is not authenticated.',
-    })
+   return c.json({ message: 'Payment service is not authenticated.' }, 401)
   }
 
   c.set("userId",auth.userId)

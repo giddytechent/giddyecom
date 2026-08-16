@@ -6,6 +6,7 @@ import {cors} from 'hono/cors'
 
 
 import sessionRoute from './routes/session.route'
+import webhookRoute from './routes/webhooks.route'
 
 const app = new Hono()
 
@@ -23,6 +24,7 @@ app.get('/health', (c) => {
 })
 
 app.route('/sessions', sessionRoute)
+app.route('/webhooks', webhookRoute)
 
 // app.post("/create-stripe-product", async (c) => {
 
