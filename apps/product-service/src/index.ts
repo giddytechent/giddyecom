@@ -5,6 +5,7 @@ import {  clerkMiddleware } from '@clerk/express'
 import { shouldBeUser } from "./middleware/authMiddleware"
 import productRouter from "./routes/product.route"
 import categoryRouter from "./routes/category.route"
+import { consumer, producer } from "./utils/kafka"
 
 const app = express()
 app.use(cors({
@@ -40,6 +41,16 @@ app.use((err:any, req:Request, res:Response, next:NextFunction)=>{
     return res.status(err.status || 500).json({message:err.message || "Internal Server Error!"})
 })
 
-app.listen(8000, () => {
-    console.log("Product service is running on port 8000")
-})
+
+const start = async () =>{
+    try {
+        Promise.all([await producer.connect(), await consumer.connect()])
+        app.listen(8000, ()=>{
+            console.log("Product service is running on 8000")
+        })
+    } catch (error) {
+        console.log(error)
+        process.exit(1)
+    }
+}
+start()

@@ -20,15 +20,18 @@ export const shouldBeUser = async (request:FastifyRequest,reply:FastifyReply)=>{
 }
 
 export const shouldBeAdmin = async (request:FastifyRequest,reply:FastifyReply)=>{
+  
+  
      const auth = getAuth(request)
     
-    if (!auth.userId) {
-      return reply.status(401).send({ message: 'Order service not authenticated' })
+    if (!auth?.userId) {
+      return reply.status(401).send({ message: 'Order service is not authenticated' })
     }
 
     const claims = auth.sessionClaims as CustomJwtSessionClaims
-
-    if (claims.metadata?.role === 'admin') {
+    
+    
+    if (claims.metadata?.role !== 'admin') {
       return reply.status(403).send({ message: 'Unauthorized' })
     }
 

@@ -30,9 +30,9 @@ export const shouldBeUser = (
 }
 
 export const shouldBeAdmin = (
-  req:Request,
-  res:Response,
-  next:NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
 
   const auth = getAuth(req)
@@ -43,11 +43,12 @@ export const shouldBeAdmin = (
     return
   }
 
-   const claims = auth.sessionClaims as CustomJwtSessionClaims
+  const claims = auth.sessionClaims as CustomJwtSessionClaims | undefined
 
-    if (claims.metadata?.role !== 'admin') {
-      return res.status(403).send({ message: 'Unauthorized' })
-    }
+  if (claims?.metadata?.role !== 'admin') {
+    res.status(403).json({ message: 'Unauthorized' })
+    return
+  }
 
   req.userId = auth.userId
 

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
+    "@clerk/nextjs": "^7.5.22",
     "@hookform/resolvers": "^5.5.7",
     "@tanstack/react-table": "^8.21.3",
     "class-variance-authority": "^0.7.1",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
+    "@repo/types": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

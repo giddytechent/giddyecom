@@ -1,5 +1,7 @@
+import { requireAdmin } from "@/lib/requireAdmin";
 import { User,columns } from "./columns";
 import { DataTable } from "./data-table";
+
 
 const getData = async (): Promise<User[]> => {
   return [
@@ -259,6 +261,7 @@ const getData = async (): Promise<User[]> => {
 };
 
 const PaymentsPage = async () => {
+  await requireAdmin()
   const data = await getData();
   return (
     <div className="">
