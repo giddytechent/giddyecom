@@ -38,6 +38,12 @@ export const generateMetadata = async ({params}:{params:Promise<{id:string}>}) =
   }
 }
 
+/**
+ * Renders the product detail page for the requested product and selections.
+ *
+ * @param params - Route parameters containing the product identifier.
+ * @param searchParams - Query parameters containing the selected color and size.
+ */
 export default async function ProductPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ color: string; size: string }> }) {
 
     const { size, color } = await searchParams

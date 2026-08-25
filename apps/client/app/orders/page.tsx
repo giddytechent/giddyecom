@@ -16,6 +16,11 @@ const fetchOrders = async () =>{
     return data
 }
 
+/**
+ * Renders the current user's orders with their details or an empty-state message.
+ *
+ * @returns The orders page content.
+ */
 export default async function OrdersPage() {
 
     const orders = await fetchOrders()

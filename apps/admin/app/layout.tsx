@@ -20,6 +20,11 @@ export const metadata: Metadata = {
   description: "GIDDYTECH GADGETS",
 };
 
+/**
+ * Provides the root HTML structure and authentication context for the application.
+ *
+ * @param children - The content rendered inside the document body
+ */
 export default async function RootLayout({
   children,
 }: Readonly<{
