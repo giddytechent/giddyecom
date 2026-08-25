@@ -2,9 +2,11 @@ import { auth } from "@clerk/nextjs/server";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { OrderType } from "@repo/types";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 const getData = async (): Promise<OrderType[]> => {
   try {
+    await requireAdmin()
     const { getToken } = await auth()
     const token = await getToken()
     const res = await fetch(`${process.env.NEXT_PUBLIC_ORDER_SERVICE_URL}/orders`, {

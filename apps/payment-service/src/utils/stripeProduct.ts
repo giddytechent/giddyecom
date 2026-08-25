@@ -1,7 +1,8 @@
 import { StripeProductType } from "@repo/types"
+import type Stripe from "stripe"
 import stripe from "./stripe"
 
-export const createStripeProduct = async (item: StripeProductType) => {
+export const createStripeProduct = async (item: StripeProductType): Promise<Stripe.Product> => {
   try {
     const res = await stripe.products.create({
       id: item.id,
@@ -14,7 +15,7 @@ export const createStripeProduct = async (item: StripeProductType) => {
     return res
   } catch (error) {
     console.log(error)
-    return error
+    throw error
   }
 }
 
@@ -35,12 +36,12 @@ export const getStripeProductPrice = async (productId: number) => {
   }
 }
 
-export const deleteStripeProduct = async (productId: number) => {
+export const deleteStripeProduct = async (productId: number): Promise<Stripe.Response<Stripe.DeletedProduct>> => {
   try {
     const res = await stripe.products.del(productId.toString());
     return res;
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 };

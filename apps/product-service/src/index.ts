@@ -41,11 +41,12 @@ app.use((err:any, req:Request, res:Response, next:NextFunction)=>{
     return res.status(err.status || 500).json({message:err.message || "Internal Server Error!"})
 })
 
+
 const start = async () =>{
     try {
         Promise.all([await producer.connect(), await consumer.connect()])
         app.listen(8000, ()=>{
-            console.log("Product service is running on 8080")
+            console.log("Product service is running on 8000")
         })
     } catch (error) {
         console.log(error)

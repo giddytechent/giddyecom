@@ -27,13 +27,21 @@ export const runKafkaSubscriptions = async ()=> {
     const product = message.value
     console.log("Received message: product.created", product)
 
-    await createStripeProduct(product)
+    try {
+      await createStripeProduct(product)
+    } catch (error) {
+      throw error
+    }
   })
 
   consumer.subscribe("product.deleted", async (message)=> {
     const productId = message.value
     console.log("Received message: product.created", productId)
 
-    await deleteStripeProduct(productId)
+    try {
+      await deleteStripeProduct(productId)
+    } catch (error) {
+      throw error
+    }
   })
 }

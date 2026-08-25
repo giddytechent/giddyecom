@@ -49,7 +49,6 @@ app.route('/webhooks', webhookRoute)
 //   return c.json(res)
 // })
 
-
 const start = async () => {
   try {
      Promise.all([ await producer.connect(), await consumer.connect()])

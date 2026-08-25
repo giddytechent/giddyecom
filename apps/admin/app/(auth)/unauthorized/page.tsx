@@ -7,7 +7,7 @@ export default function Unauthorized(){
     return (
         <div>
             <h1>You do not have access</h1>
-            <button onClick={()=>signOut}>Sign out</button>
+            <button onClick={()=> void signOut()}>Sign out</button>
         </div>
     )
 }

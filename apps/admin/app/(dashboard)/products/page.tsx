@@ -1,9 +1,11 @@
 import { ProductsType } from "@repo/types";
 import {  columns } from "./columns";
 import { DataTable } from "./data-table";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 
 const getData = async (): Promise<ProductsType> => {
+    await requireAdmin()
     try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL}/products`)
         const data = await res.json()

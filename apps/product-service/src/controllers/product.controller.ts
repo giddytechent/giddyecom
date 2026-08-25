@@ -38,7 +38,7 @@ export const createProduct = async (req: Request, res: Response) => {
         price:product.price
     }
 
-    producer.send("product.created", {value:stripeProduct})
+    await producer.send("product.created", {value:stripeProduct})
 
     return res.status(201).json(product)
 
@@ -65,7 +65,7 @@ export const deleteProduct = async (req: Request, res: Response) => {
         where: { id: Number(id) },
     })
 
-    producer.send("product.deleted", {value:Number(id)})
+    await producer.send("product.deleted", {value:Number(id)})
 
     return res.status(200).json(deleteProduct)
 }

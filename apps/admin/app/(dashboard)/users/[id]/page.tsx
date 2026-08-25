@@ -21,9 +21,10 @@ import EditUser from "@/components/EditUser";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AppLineChart from "@/components/AppLineChart";
 import { auth } from "@clerk/nextjs/server"
+import { requireAdmin } from "@/lib/requireAdmin";
 
 const SingleUserPage = async () => {
-  await auth.protect()
+  await requireAdmin()
   return (
     <div className="">
       <Breadcrumb>
