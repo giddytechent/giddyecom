@@ -2,6 +2,9 @@
 
 import { useAuth } from "@clerk/nextjs"
 
+/**
+ * Displays an access-denied message and a sign-out button.
+ */
 export default function Unauthorized(){
     const {signOut} = useAuth()
     return (

@@ -27,6 +27,12 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
 }
 
+/**
+ * Renders a paginated, sortable, and selectable data table.
+ *
+ * @param columns - The column definitions used to render the table
+ * @param data - The row data displayed in the table
+ */
 export function DataTable<TData, TValue>({
   columns,
   data,

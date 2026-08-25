@@ -78,7 +78,9 @@ const steps = [
 //         selectedSize: "l",
 //         selectedColor: "black"
 //     },
-// ]
+/**
+ * Renders the shopping cart and the active checkout step, including shipping and payment forms.
+ */
 
 
 export default function CartPage() {

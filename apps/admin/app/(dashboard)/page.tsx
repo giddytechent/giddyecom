@@ -6,6 +6,9 @@ import TodoList from "@/components/TodoList"
 import clerkMiddleware from "../../proxy"
 
 
+/**
+ * Renders the dashboard home page with charts, transaction and product lists, and a todo list.
+ */
 export default async function Home() {
   return (
      <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-4 gap-4">
