@@ -3,29 +3,35 @@ import { ProductType } from "@repo/types"
 import Image from "next/image"
 
 
-const product: ProductType = {
-    id: 1,
-    name: "Adidas CoreFit T-Shirt",
-    shortDescription:
-        "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
-    description:
-        "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
-    price: 39.9,
-    sizes: ["s", "m", "l", "xl", "xxl"],
-    colors: ["gray", "purple", "green"],
-    images: {
-        gray: "/products/1g.png",
-        purple: "/products/1p.png",
-        green: "/products/1gr.png",
-    },
-    categorySlug: "t-shirt",
-    createdAt: new Date(),
-    updatedAt: new Date(),
+// const product: ProductType = {
+//     id: 1,
+//     name: "Adidas CoreFit T-Shirt",
+//     shortDescription:
+//         "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
+//     description:
+//         "Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit. Lorem ipsum dolor sit amet consect adipisicing elit lorem ipsum dolor sit.",
+//     price: 39.9,
+//     sizes: ["s", "m", "l", "xl", "xxl"],
+//     colors: ["gray", "purple", "green"],
+//     images: {
+//         gray: "/products/1g.png",
+//         purple: "/products/1p.png",
+//         green: "/products/1gr.png",
+//     },
+//     categorySlug: "t-shirt",
+//     createdAt: new Date(),
+//     updatedAt: new Date(),
+// }
+
+const fetchProduct = async (id:string)=>{
+    const res = await fetch(`${process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL}/products/${id}`)
+    const data:ProductType = await res.json()
+    return data
 }
 
-export const generateMetadata = async ({params}:{params:{id:string}}) => {
-  // TODO: Get product from db 
-  // TEMPORARY
+export const generateMetadata = async ({params}:{params:Promise<{id:string}>}) => {
+  const {id} = await params
+    const product = await fetchProduct(id)
   return {
     title:product.name,
     describe: product.description
@@ -35,6 +41,9 @@ export const generateMetadata = async ({params}:{params:{id:string}}) => {
 export default async function ProductPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ color: string; size: string }> }) {
 
     const { size, color } = await searchParams
+
+    const {id} = await params
+    const product = await fetchProduct(id)
     const selectedSize = (size || product.sizes[0] as string)
     const selectedColor = (color || product.colors[0] as string)
     return (

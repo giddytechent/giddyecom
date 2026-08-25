@@ -131,7 +131,7 @@ export default function CartPage() {
                                             <p className="text-sm text-gray-500">Size:{" "}{item.selectedSize}</p>
                                             <p className="text-sm text-gray-500">Color:{" "}{item.selectedColor}</p>
                                         </div>
-                                        <p className="font-medium">${item.price.toFixed(2)}</p>
+                                        <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
                                     </div>
                                 </div>
                                 {/* DELETE BUTTON  */}

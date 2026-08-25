@@ -1,6 +1,7 @@
 import { User,columns } from "./columns";
 import { DataTable } from "./data-table";
 
+
 const getData = async (): Promise<User[]> => {
   return [
     {
