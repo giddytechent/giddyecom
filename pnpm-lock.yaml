@@ -112,6 +112,34 @@ importers:
         specifier: ^5
         version: 5.9.2
 
+  apps/auth-service:
+    dependencies:
+      '@clerk/express':
+        specifier: ^2.1.45
+        version: 2.1.47(express@5.2.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@repo/kafka':
+        specifier: workspace:*
+        version: link:../../packages/kafka
+      cors:
+        specifier: ^2.8.6
+        version: 2.8.6
+      express:
+        specifier: ^5.2.1
+        version: 5.2.1
+    devDependencies:
+      '@repo/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@types/cors':
+        specifier: ^2.8.19
+        version: 2.8.19
+      '@types/express':
+        specifier: ^5.0.6
+        version: 5.0.6
+
   apps/client:
     dependencies:
       '@clerk/nextjs':
@@ -5380,8 +5408,8 @@ snapshots:
 
   '@clerk/express@2.1.47(express@5.2.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
-      '@clerk/backend': 3.13.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@clerk/shared': 4.25.8(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@clerk/backend': 3.15.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@clerk/shared': 4.25.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       express: 5.2.1
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -6934,7 +6962,7 @@ snapshots:
 
   '@types/cors@2.8.19':
     dependencies:
-      '@types/node': 26.1.2
+      '@types/node': 26.2.0
 
   '@types/d3-array@3.0.3': {}
 
