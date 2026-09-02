@@ -36,17 +36,17 @@ export const columns: ColumnDef<User>[] = [
       />
     ),
   },
-   {
+  {
     accessorKey: "avatar",
     header: "Avatar",
-    cell:({row})=>{
-      const user = row.original
+    cell: ({ row }) => {
+      const user = row.original;
       return (
         <div className="w-9 h-9 relative">
           <Image src={user.imageUrl} alt={user.firstName || user.username || "-"} fill className="rounded-full object-cover" />
         </div>
-      )
-    }
+      );
+    },
   },
   {
     accessorKey: "firstName",
@@ -112,7 +112,7 @@ export const columns: ColumnDef<User>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(user.id)}
             >
-              Copy payment ID
+              Copy user ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

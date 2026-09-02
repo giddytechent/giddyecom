@@ -6,23 +6,26 @@ import { requireAdmin } from "@/lib/requireAdmin";
 
 const getData = async (): Promise<OrderType[]> => {
   try {
-    await requireAdmin()
-    const { getToken } = await auth()
-    const token = await getToken()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_ORDER_SERVICE_URL}/orders`, {
-      headers: {
-        Authorization: `Bearer ${token}`
+    const { getToken } = await auth();
+    const token = await getToken();
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_ORDER_SERVICE_URL}/orders`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
-    })
-    const data = await res.json()
-    return data
-  } catch (error) {
-    console.log(error)
-    return []
+    );
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.log(err);
+    return [];
   }
 };
 
 const OrdersPage = async () => {
+  await requireAdmin()
   const data = await getData();
   return (
     <div className="">

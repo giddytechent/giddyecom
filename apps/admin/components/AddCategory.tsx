@@ -9,6 +9,8 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 import {
   Field,
@@ -21,36 +23,57 @@ import {
 
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-
-const formSchema = z.object({
-  name: z.string().min(1, { error: "Name is Required!" }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { CategoryFormSchema } from "@repo/types";
+import { useAuth } from "@clerk/nextjs";
 
 const AddCategory = () => {
-  const { handleSubmit, control } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof CategoryFormSchema>>({
+    resolver: zodResolver(CategoryFormSchema),
     defaultValues: {
       name: "",
+      slug: "",
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-  };
+  const { getToken } = useAuth();
+
+  const mutation = useMutation({
+    mutationFn: async (data: z.infer<typeof CategoryFormSchema>) => {
+      const token = await getToken();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL}/categories`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!res.ok) {
+        throw new Error("Failed to create category!");
+      }
+    },
+    onSuccess: () => {
+      toast.success("Category created successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
     <SheetContent>
       <SheetHeader>
         <SheetTitle className="mb-4">Add Category</SheetTitle>
         <SheetDescription asChild>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
             <FieldSet>
               <FieldGroup>
                 <Controller
                   name="name"
-                  control={control}
+                  control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel htmlFor="name">Name</FieldLabel>
@@ -74,8 +97,36 @@ const AddCategory = () => {
               </FieldGroup>
             </FieldSet>
 
-            <Button type="submit" className="w-full">
-              Submit
+            <FieldSet>
+              <FieldGroup>
+                <Controller
+                  name="slug"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="slug">Slug</FieldLabel>
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        id="slug"
+                        type="text"
+                        placeholder="Enter category slug"
+                        aria-invalid={fieldState.invalid}
+                      />
+                      <FieldDescription>
+                        Enter category slug.
+                      </FieldDescription>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+            </FieldSet>
+
+            <Button type="submit" disabled={mutation.isPending} className="disabled:opacity-50 disabled:cursor-not-allowed" >
+              {mutation.isPending ? "Creating..." : "Create Category"}
             </Button>
           </form>
         </SheetDescription>

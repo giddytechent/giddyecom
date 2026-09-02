@@ -20,12 +20,12 @@ import Link from "next/link";
 // export type Product = {
 //   id: string | number;
 //   price: number;
-//   name: string
-//   shortDescription: string
-//   description: string
-//   sizes: string[]
-//   colors: string[]
-//   images: Record<string, string>
+//   name: string;
+//   shortDescription: string;
+//   description: string;
+//   sizes: string[];
+//   colors: string[];
+//   images: Record<string, string>;
 // };
 
 export const columns: ColumnDef<ProductType>[] = [
@@ -50,13 +50,22 @@ export const columns: ColumnDef<ProductType>[] = [
   {
     accessorKey: "image",
     header: "Image",
-    cell:({row})=>{
-          const product = row.original
-          return (
-            <div className="w-9 h-9 relative">
-              <Image src={(product.images as Record<string, string>)?.[product.colors[0] || ""] || ""} alt={product.name} fill className="rounded-full object-cover" />
-            </div>
-          )
+    cell: ({ row }) => {
+      const product = row.original;
+      return (
+        <div className="w-9 h-9 relative">
+          <Image
+            src={
+              (product.images as Record<string, string>)?.[
+                product.colors[0] || ""
+              ] || ""
+            }
+            alt={product.name}
+            fill
+            className="rounded-full object-cover"
+          />
+        </div>
+      );
     },
   },
   {
@@ -78,8 +87,8 @@ export const columns: ColumnDef<ProductType>[] = [
     },
   },
   {
-    accessorKey:"shortDescription",
-   header: "Description"
+    accessorKey: "shortDescription",
+    header: "Description",
   },
   {
     id: "actions",
@@ -97,13 +106,15 @@ export const columns: ColumnDef<ProductType>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.id.toString())}
+              onClick={() =>
+                navigator.clipboard.writeText(product.id.toString())
+              }
             >
-              Copy payment ID
+              Copy product ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link href={`/users/${product.id}`}>View product</Link>
+              <Link href={`/products/${product.id}`}>View product</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

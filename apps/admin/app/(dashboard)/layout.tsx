@@ -4,6 +4,8 @@ import AppSidebar from "@/components/AppSidebar";
 import { cookies } from "next/headers"
 import Navbar from "@/components/Navbar";
 import { requireAdmin } from '@/lib/requireAdmin'
+import { QueryProvider } from "@/components/providers/query-provider";
+import { ToastContainer } from "react-toastify";
 
 
 
@@ -17,14 +19,8 @@ export default async function RootLayout({
   const cookieStore = await cookies()
   const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
   return (
-
-    <div className="flex">
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
+    <QueryProvider>
+      <div className="flex">
         <SidebarProvider defaultOpen={defaultOpen}>
           <AppSidebar />
           <main className="w-full">
@@ -32,7 +28,8 @@ export default async function RootLayout({
             <div className="px-4">{children}</div>
           </main>
         </SidebarProvider>
-      </ThemeProvider>
-    </div>
+      </div>
+      <ToastContainer position="bottom-right" />
+    </QueryProvider>
   );
 }
