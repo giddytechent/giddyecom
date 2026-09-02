@@ -19,8 +19,8 @@ import Link from "next/link";
 // export type Payment = {
 //   id: string;
 //   amount: number;
-//   fullName: string
-//   userId: string
+//   fullName: string;
+//   userId: string;
 //   email: string;
 //   status: "pending" | "processing" | "success" | "failed";
 // };
@@ -113,13 +113,13 @@ export const columns: ColumnDef<OrderType>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(order._id)}
             >
-              Copy Order ID
+              Copy order ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <Link href={`/users/${order.userId}`}>View customer</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>View Order details</DropdownMenuItem>
+            <DropdownMenuItem>View order details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

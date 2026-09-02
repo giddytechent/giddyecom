@@ -22,35 +22,53 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
+import { useAuth } from "@clerk/nextjs";
+import { useMutation } from "@tanstack/react-query";
 
-const formSchema = z.object({
-  fullName: z
-    .string()
-    .min(2, { error: "Full name must be at least 2 characters!" })
-    .max(50),
-  email: z.email({ error: "Invalid email address!" }),
-  phone: z.string().min(10).max(15),
-  address: z.string().min(2),
-  city: z.string().min(2),
-});
+import { UserFormSchema } from "@repo/types";
+import { toast } from "react-toastify";
 
-type FormValues = z.infer<typeof formSchema>;
+
+
 
 const AddUser = () => {
-  const { handleSubmit, control } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof UserFormSchema>>({
+    resolver: zodResolver(UserFormSchema),
     defaultValues: {
-      fullName: "",
-      email: "",
-      phone: "",
-      address: "",
-      city: "",
+      firstName: "",
+      lastName: "",
+      username: "",
+      emailAddress: [],
+      password: "",
+    }
+  })
+  const { getToken } = useAuth();
+
+  const mutation = useMutation({
+    mutationFn: async (data: z.infer<typeof UserFormSchema>) => {
+      const token = await getToken();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_AUTH_SERVICE_URL}/users`,
+        {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!res.ok) {
+        throw new Error("Failed to create user!");
+      }
+    },
+    onSuccess: () => {
+      toast.success("User created successfully");
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
-
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-  };
 
   return (
     <SheetContent>
@@ -58,25 +76,73 @@ const AddUser = () => {
         <SheetHeader>
           <SheetTitle className="mb-4">Add User</SheetTitle>
           <SheetDescription asChild>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
               <FieldSet>
                 <FieldGroup>
                   <Controller
-                    name="fullName"
-                    control={control}
+                    name="firstName"
+                    control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="fullname">Full Name</FieldLabel>
+                        <FieldLabel htmlFor="firstName">First Name</FieldLabel>
                         <Input
                           {...field}
                           value={field.value ?? ""}
-                          id="fullname"
+                          id="firstName"
+                          type="text"
+                          placeholder="Enter first name"
+                          aria-invalid={fieldState.invalid}
+                        />
+                        <FieldDescription>
+                          Enter user first name
+                        </FieldDescription>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </Field>
+                    )}
+                  />
+
+                  <Controller
+                    name="lastName"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
+                        <Input
+                          {...field}
+                          value={field.value ?? ""}
+                          id="lastName"
+                          type="text"
+                          placeholder="Enter last name"
+                          aria-invalid={fieldState.invalid}
+                        />
+                        <FieldDescription>
+                          Enter user last name
+                        </FieldDescription>
+                        {fieldState.invalid && (
+                          <FieldError errors={[fieldState.error]} />
+                        )}
+                      </Field>
+                    )}
+                  />
+
+                  <Controller
+                    name="username"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor="username">Username</FieldLabel>
+                        <Input
+                          {...field}
+                          value={field.value ?? ""}
+                          id="username"
                           type="text"
                           placeholder="Enter username"
                           aria-invalid={fieldState.invalid}
                         />
                         <FieldDescription>
-                          Enter user full name
+                          Enter user username
                         </FieldDescription>
                         {fieldState.invalid && (
                           <FieldError errors={[fieldState.error]} />
@@ -86,21 +152,25 @@ const AddUser = () => {
                   />
 
                   <Controller
-                    name="email"
-                    control={control}
+                    name="emailAddress"
+                    control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="email">Email</FieldLabel>
+                        <FieldLabel htmlFor="emailAddress">Email Address</FieldLabel>
                         <Input
                           {...field}
                           value={field.value ?? ""}
-                          id="email"
+                          id="emailAddress"
                           type="email"
-                          placeholder="Enter email"
+                          placeholder="email1@gmail.com, email2@gmail.com"
+                          onChange={(e) => {
+                            const emails = e.target.value.split(",").map(email => email.trim()).filter(email => email);
+                            field.onChange(emails);
+                          }}
                           aria-invalid={fieldState.invalid}
                         />
                         <FieldDescription>
-                          Only admin can see your email.
+                          Enter user email address
                         </FieldDescription>
                         {fieldState.invalid && (
                           <FieldError errors={[fieldState.error]} />
@@ -110,21 +180,21 @@ const AddUser = () => {
                   />
 
                   <Controller
-                    name="phone"
-                    control={control}
+                    name="password"
+                    control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="phone">Phone</FieldLabel>
+                        <FieldLabel htmlFor="password">Password</FieldLabel>
                         <Input
                           {...field}
                           value={field.value ?? ""}
-                          id="phone"
-                          type="tel"
-                          placeholder="Enter phone number"
+                          id="password"
+                          type="password"
+                          placeholder="Enter password"
                           aria-invalid={fieldState.invalid}
                         />
                         <FieldDescription>
-                          Only admin can see your phone number (optional).
+                          Enter user password (min 6 characters)
                         </FieldDescription>
                         {fieldState.invalid && (
                           <FieldError errors={[fieldState.error]} />
@@ -132,60 +202,11 @@ const AddUser = () => {
                       </Field>
                     )}
                   />
-
-                  <Controller
-                    name="address"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="address">Address</FieldLabel>
-                        <Input
-                          {...field}
-                          value={field.value ?? ""}
-                          id="address"
-                          type="text"
-                          placeholder="Address"
-                          aria-invalid={fieldState.invalid}
-                        />
-                        <FieldDescription>
-                          Enter user address (optional)
-                        </FieldDescription>
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
-                      </Field>
-                    )}
-                  />
-
-                  <Controller
-                    name="city"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="city">City</FieldLabel>
-                        <Input
-                          {...field}
-                          value={field.value ?? ""}
-                          id="city"
-                          type="text"
-                          placeholder="City"
-                          aria-invalid={fieldState.invalid}
-                        />
-                        <FieldDescription>
-                          Enter user city (optional)
-                        </FieldDescription>
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
-                      </Field>
-                    )}
-                  />
-
                 </FieldGroup>
               </FieldSet>
 
-              <Button type="submit" className="w-full">
-                Submit
+              <Button type="submit" disabled={mutation.isPending} className="disabled:opacity-50 disabled:cursor-not-allowed" >
+                {mutation.isPending ? "Submitting..." : "Submit"}
               </Button>
             </form>
           </SheetDescription>
