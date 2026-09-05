@@ -27,6 +27,7 @@ fastify.get("/test", { preHandler: shouldBeUser }, (request, reply) => {
 })
 
 fastify.register(orderRoute)
+
 const start = async () => {
     try {
 
@@ -39,4 +40,5 @@ const start = async () => {
         process.exit(1)
     }
 }
+
 start()

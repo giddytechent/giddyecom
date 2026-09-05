@@ -9,9 +9,7 @@ export const createCategory = async (req: Request, res: Response) => {
         const category = await prisma.category.create({ data })
         console.log(category)
         return res.status(201).json(category)
-
 }
-
 export const updateCategory = async (req: Request, res: Response) => {
         const { id } = req.params
         const data: Prisma.CategoryUpdateInput = req.body
@@ -20,7 +18,6 @@ export const updateCategory = async (req: Request, res: Response) => {
                 where: { id: Number(id) },
                 data
         })
-
         return res.status(200).json(category)
 }
 

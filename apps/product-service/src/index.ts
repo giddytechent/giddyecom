@@ -13,7 +13,6 @@ app.use(cors({
     credentials: true
 }))
 
-
 app.use(clerkMiddleware())
 app.use(express.json())
 
@@ -25,22 +24,13 @@ app.get("/health", (req: Request, res: Response) => {
     })
 })
 
-app.get("/test", shouldBeUser, async (req, res) => {
-    res.json({
-        message: "Product service is autheticated",
-        userId: req.userId
-    })
-})
-
 app.use("/categories", categoryRouter)
 app.use("/products", productRouter)
-
 
 app.use((err:any, req:Request, res:Response, next:NextFunction)=>{
     console.log(err)
     return res.status(err.status || 500).json({message:err.message || "Internal Server Error!"})
 })
-
 
 const start = async () =>{
     try {
