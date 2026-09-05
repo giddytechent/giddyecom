@@ -1,4 +1,4 @@
-import { clerkClient, getAuth } from "@clerk/fastify";
+import { getAuth } from "@clerk/fastify";
 import { FastifyReply, FastifyRequest } from "fastify";
 import type { CustomJwtSessionClaims } from "@repo/types";
 

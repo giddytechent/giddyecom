@@ -31,7 +31,7 @@ export const createProduct = async (req: Request, res: Response) => {
     const product = await prisma.product.create({
         data
     })
-    
+
     const stripeProduct:StripeProductType = {
         id:product.id.toString(),
         name:product.name,

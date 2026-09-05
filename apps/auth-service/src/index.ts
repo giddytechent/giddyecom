@@ -4,6 +4,7 @@ import cors from "cors"
 import {  clerkMiddleware } from '@clerk/express'
 import { shouldBeAdmin } from "./middleware/authMiddleware"
 import userRoute from "./routes/user.routes"
+import { producer } from "./utils/kafka"
 
 const app = express()
 app.use(cors({
@@ -34,6 +35,7 @@ app.use((err:any, req:Request, res:Response, next:NextFunction)=>{
 
 const start = async () =>{
     try {
+        await producer.connect()
         app.listen(8003, ()=>{
             console.log("Auth service is running on 8003")
         })

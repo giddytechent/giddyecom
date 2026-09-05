@@ -8,7 +8,6 @@ const webhookRoute = new Hono();
 
 const formatShippingAddress = (address?: Stripe.Address | null) => {
   if (!address) return "Not provided";
-
   return [
     address.line1,
     address.line2,

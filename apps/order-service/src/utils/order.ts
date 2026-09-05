@@ -1,5 +1,6 @@
 import { Order } from "@repo/order-db";
 import { OrderType } from "@repo/types";
+import { producer } from "./kafka";
 
 const normalizeOrder = (order: Partial<OrderType>): OrderType => {
   return {
@@ -18,13 +19,19 @@ const normalizeOrder = (order: Partial<OrderType>): OrderType => {
     })),
   } as OrderType;
 };
-
 export const createOrder = async (order: OrderType) => {
   const normalizedOrder = normalizeOrder(order);
 
   try {
     const newOrder = new Order(normalizedOrder);
     await newOrder.save();
+    producer.send("order.created",{
+      value: {
+        email:order.email,
+        amount: order.amount,
+        status: order.status
+      }
+    })
   } catch (error) {
     console.log("Order save failed:", error);
     throw error;

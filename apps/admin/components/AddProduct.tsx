@@ -31,49 +31,53 @@ import {
 } from "./ui/select";
 import { Checkbox } from "./ui/checkbox";
 import { ScrollArea } from "./ui/scroll-area";
+import { CategoryType, colors, ProductFormSchema, sizes } from "@repo/types";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { useAuth } from "@clerk/nextjs";
 
-const categories = [
-  "T-shirts",
-  "Shoes",
-  "Accessories",
-  "Bags",
-  "Dresses",
-  "Jackets",
-  "Gloves",
-] as const;
+// const categories = [
+//   "T-shirts",
+//   "Shoes",
+//   "Accessories",
+//   "Bags",
+//   "Dresses",
+//   "Jackets",
+//   "Gloves",
+// ] as const;
 
-const colors = [
-  "blue", "green", "red", "yellow", "purple", "orange",
-  "pink", "brown", "gray", "black", "white",
-] as const;
+// const colors = [
+//   "blue", "green", "red", "yellow", "purple", "orange",
+//   "pink", "brown", "gray", "black", "white",
+// ] as const;
 
-const sizes = [
-  "xs", "s", "m", "l", "xl", "xxl",
-  "34", "35", "36", "37", "38", "39", "40",
-  "41", "42", "43", "44", "45", "46", "47", "48",
-] as const;
+// const sizes = [
+//   "xs", "s", "m", "l", "xl", "xxl",
+//   "34", "35", "36", "37", "38", "39", "40",
+//   "41", "42", "43", "44", "45", "46", "47", "48",
+// ] as const;
 
-const formSchema = z.object({
-  name: z.string().min(1, { error: "Product name is required!" }),
-  shortDescription: z
-    .string()
-    .min(1, { error: "Short description is required!" })
-    .max(60),
-  description: z
-    .string()
-    .min(1, { error: "Description is required!" })
-    .max(1000),
-  price: z.coerce
-    .number({ error: "Price must be a number" })
-    .min(1, { error: "Price is required!" }),
-  category: z.enum(categories, { error: "Please select a category" }),
-  sizes: z.array(z.enum(sizes)).min(1, { error: "Select at least one size" }),
-  colors: z.array(z.enum(colors)).min(1, { error: "Select at least one color" }),
-  images: z.record(z.enum(colors), z.string()),
-});
+// const formSchema = z.object({
+//   name: z.string().min(1, { error: "Product name is required!" }),
+//   shortDescription: z
+//     .string()
+//     .min(1, { error: "Short description is required!" })
+//     .max(60),
+//   description: z
+//     .string()
+//     .min(1, { error: "Description is required!" })
+//     .max(1000),
+//   price: z.coerce
+//     .number({ error: "Price must be a number" })
+//     .min(1, { error: "Price is required!" }),
+//   category: z.enum(categories, { error: "Please select a category" }),
+//   sizes: z.array(z.enum(sizes)).min(1, { error: "Select at least one size" }),
+//   colors: z.array(z.enum(colors)).min(1, { error: "Select at least one color" }),
+//   images: z.record(z.enum(colors), z.string()),
+// });
 
-type FormInput = z.input<typeof formSchema>;
-type FormOutput = z.output<typeof formSchema>;
+// type FormInput = z.input<typeof formSchema>;
+// type FormOutput = z.output<typeof formSchema>;
 
 const colorStyles: Record<(typeof colors)[number], string> = {
   blue: "bg-blue-500",
@@ -89,23 +93,63 @@ const colorStyles: Record<(typeof colors)[number], string> = {
   white: "bg-white border border-gray-300",
 };
 
-const AddProduct = () => {
-  const { handleSubmit, control } = useForm<FormInput, unknown, FormOutput>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      shortDescription: "",
-      description: "",
-      category: undefined, 
-      sizes: [],
-      colors: [],
-      images: {},
-    },
-  });
+const fetchCategories = async () => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL}/categories`)
 
-  const onSubmit = (data: FormOutput) => {
-    console.log(data);
-  };
+  if(!res.ok){
+    throw new Error("Failed to fetch categories")
+  }
+
+  return await res.json()
+}
+
+const AddProduct = () => {
+  const form = useForm<z.infer<typeof ProductFormSchema>>({
+    resolver: zodResolver(ProductFormSchema),
+    defaultValues:{
+      name:"",
+      shortDescription:"",
+      description:"",
+      price:0,
+      categorySlug:"",
+      sizes:[],
+      colors:[],
+      images: {}
+    }
+  })
+
+  const { isPending, error, data} = useQuery({
+    queryKey: ['categories'],
+    queryFn: fetchCategories
+  })
+
+  const { getToken } = useAuth();
+  
+    const mutation = useMutation({
+      mutationFn: async (data: z.infer<typeof ProductFormSchema>) => {
+        const token = await getToken();
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_PRODUCT_SERVICE_URL}/products`,
+          {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (!res.ok) {
+          throw new Error("Failed to create product!!");
+        }
+      },
+      onSuccess: () => {
+        toast.success("Product created successfully");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
 
   return (
     <SheetContent>
@@ -113,13 +157,12 @@ const AddProduct = () => {
         <SheetHeader>
           <SheetTitle className="mb-4">Add Product</SheetTitle>
           <SheetDescription asChild>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form  className="space-y-6" onSubmit={form.handleSubmit((data)=> mutation.mutate(data))}>
               <FieldSet>
                 <FieldGroup>
-                  
                   <Controller
                     name="name"
-                    control={control}
+                    control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel htmlFor="product-name">
@@ -144,7 +187,7 @@ const AddProduct = () => {
 
                   <Controller
                     name="shortDescription"
-                    control={control}
+                    control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel htmlFor="shortDescription">
@@ -169,7 +212,7 @@ const AddProduct = () => {
 
                   <Controller
                     name="description"
-                    control={control}
+                    control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel htmlFor="description">
@@ -193,28 +236,18 @@ const AddProduct = () => {
 
                   <Controller
                     name="price"
-                    control={control}
+                    control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel htmlFor="price">Price</FieldLabel>
                         <Input
+                          {...field}
                           id="price"
                           type="number"
-                          step="0.01"
                           placeholder="price"
                           aria-invalid={fieldState.invalid}
                           name={field.name}
-                          ref={field.ref}
-                          value={
-                            typeof field.value === "number" || typeof field.value === "string"
-                              ? field.value
-                              : ""
-                          }
-                          onBlur={field.onBlur}
-                          onChange={(e) => {
-                            const raw = e.target.value;
-                            field.onChange(raw === "" ? undefined : e.target.valueAsNumber);
-                          }}
+                          onChange={(e)=> field.onChange(Number(e.target.value))}
                         />
                         <FieldDescription>
                           Enter the price of the product
@@ -226,9 +259,9 @@ const AddProduct = () => {
                     )}
                   />
 
-                  <Controller
-                    name="category"
-                    control={control}
+                  {data && (<Controller
+                    name="categorySlug"
+                    control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel htmlFor="category">Category</FieldLabel>
@@ -244,9 +277,9 @@ const AddProduct = () => {
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
                           <SelectContent>
-                            {categories.map((cat) => (
-                              <SelectItem key={cat} value={cat}>
-                                {cat}
+                            {data.map((cat: CategoryType) => (
+                              <SelectItem key={cat.id} value={cat.slug}>
+                                {cat.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -259,11 +292,11 @@ const AddProduct = () => {
                         )}
                       </Field>
                     )}
-                  />
+                  />)}
 
                   <Controller
                     name="sizes"
-                    control={control}
+                    control={form.control}
                     render={({ field, fieldState }) => {
                       const selectedSizes = field.value ?? [];
                       return (
@@ -294,7 +327,7 @@ const AddProduct = () => {
                             })}
                           </div>
                           <FieldDescription>
-                            Select the available sizes
+                            Select the available size for the product
                           </FieldDescription>
                           {fieldState.invalid && (
                             <FieldError errors={[fieldState.error]} />
@@ -306,7 +339,7 @@ const AddProduct = () => {
 
                   <Controller
                     name="colors"
-                    control={control}
+                    control={form.control}
                     render={({ field, fieldState }) => {
                       const selectedColors = field.value ?? [];
                       return (
@@ -342,25 +375,9 @@ const AddProduct = () => {
                                 );
                               })}
                             </div>
-                            {selectedColors.length > 0 && (
-                              <div className="mt-8 space-y-4">
-                                <p className="text-sm font-medium">
-                                  Upload images for selected colors
-                                </p>
-                                {selectedColors.map((color) => (
-                                  <div className="flex items-center gap-2" key={color}>
-                                    <div
-                                      className={`w-2 h-2 rounded-full ${colorStyles[color]}`}
-                                    />
-                                    <span className="text-sm min-w-15">{color}</span>
-                                    <Input type="file" accept="image/*" />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
                           </div>
                           <FieldDescription>
-                            Select the available colors
+                            Select the available colors for this product
                           </FieldDescription>
                           {fieldState.invalid && (
                             <FieldError errors={[fieldState.error]} />
@@ -369,12 +386,64 @@ const AddProduct = () => {
                       );
                     }}
                   />
+
+                  <Controller 
+                    name="images"
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor="images">Images</FieldLabel>
+                        <div>
+                          {form.watch("colors")?.map((color)=>(
+                            <div className="mb-4 flex items-center gap-4" key={color}>
+                              <div className="flex items-center gap-2">
+                                <div className="w-4 h-4rounded-full" style={{backgroundColor: color}} />
+                                <span className="text-sm font-medium min-w-20">{color}:</span>
+                              </div>
+                              <Input 
+                              type="file"
+                              accept="images/*"
+                              onChange={async (e) =>{
+                                const file = e.target.files?.[0]
+                                if(file){
+                                  try {
+                                    const formData = new FormData()
+                                    formData.append("file",file)
+                                    formData.append("upload_preset","GiddytechEcom")
+
+                                    const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,{
+                                      method:"POST",
+                                      body:formData
+                                    })
+                                    const  data = await res.json()
+                                    if (data.secure_url){
+                                      const currentImages = form.getValues("images") || {}
+                                      form.setValue("images", {
+                                        ...currentImages,
+                                        [color]: data.secure_url
+                                      })
+                                    }
+                                  } catch (error) {
+                                    console.log(error)
+                                    toast.error("Upload failed")
+                                  }
+                                }
+                              }}
+                              />
+                              {field.value?.[color] ? (<span className="text-green-600 text-sm">Image selected</span> ): (
+                                <span className="text-red-600 text-sm">Image required</span>
+                              ) }
+                            </div>
+                          ))}
+                        </div>
+                      </Field>
+                    )}
+                  />
                 </FieldGroup>
               </FieldSet>
-
-              <Button type="submit" className="w-full">
-                Submit
-              </Button>
+              <Button type="submit" disabled={mutation.isPending} className="disabled:opacity-50 disabled:cursor-not-allowed" >
+              {mutation.isPending ? "Creating..." : "Create Product"}
+            </Button>
             </form>
           </SheetDescription>
         </SheetHeader>
