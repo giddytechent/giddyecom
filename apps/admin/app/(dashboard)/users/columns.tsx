@@ -11,19 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import type { User } from "@clerk/nextjs/server";
+import { User } from "@clerk/nextjs/server";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-// export type User = {
-//   id: string;
-//   avatar: string;
-//   fullName: string;
-//   email: string;
-//   status: "active" | "inactive";
-// };
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -51,12 +43,7 @@ export const columns: ColumnDef<User>[] = [
       const user = row.original;
       return (
         <div className="w-9 h-9 relative">
-          <Image
-            src={user.imageUrl}
-            alt={user.firstName || user.username || "-"}
-            fill
-            className="rounded-full object-cover"
-          />
+          <Image src={user.imageUrl} alt={user.firstName || user.username || "-"} fill className="rounded-full object-cover" />
         </div>
       );
     },
@@ -64,10 +51,10 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "firstName",
     header: "User",
-    cell: ({ row }) => {
-      const user = row.original;
-      return <div className="">{user.firstName || user.username || "-"}</div>;
-    },
+    cell:({row})=>{
+      const user = row.original
+      return <div>{user.imageUrl} alt={user.firstName || user.username || "-"}</div>
+    }
   },
   {
     accessorKey: "email",
@@ -82,10 +69,10 @@ export const columns: ColumnDef<User>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
-      const user = row.original;
-      return <div className="">{user.emailAddresses[0]?.emailAddress}</div>;
-    },
+     cell:({row})=>{
+      const user = row.original
+      return <div>{user.imageUrl} alt={user.emailAddresses[0]?.emailAddress}</div>
+    }
   },
   {
     accessorKey: "status",
