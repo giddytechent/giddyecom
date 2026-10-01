@@ -4,6 +4,11 @@ import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
+/**
+ * Renders a desktop search field for navigating to filtered products.
+ *
+ * @returns A search input that navigates to `/products` with the entered text as the `search` query parameter when Enter is pressed.
+ */
 export default function SearchBar() {
 
   const [value, setValue] = useState("")

@@ -148,6 +148,14 @@ const fetchData = async ({
     return data
 }
 
+/**
+ * Displays products for the selected category and page context.
+ *
+ * @param category - The category used to filter products and build the products link
+ * @param sort - The optional product sort order
+ * @param search - The optional search term
+ * @param params - Determines whether product-page filters are displayed
+ */
 export default async function ProductList({
     category,
     sort,

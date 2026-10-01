@@ -7,6 +7,9 @@ import { requireAdmin } from "@/lib/requireAdmin";
 import { auth } from "@clerk/nextjs/server";
 
 
+/**
+ * Renders the dashboard home page with charts, transaction and product lists, and a todo list.
+ */
 export default async function Home() {
   await requireAdmin()
   const { getToken } = await auth()

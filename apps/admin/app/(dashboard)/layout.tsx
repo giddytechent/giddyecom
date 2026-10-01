@@ -9,6 +9,11 @@ import { ToastContainer } from "react-toastify";
 
 
 
+/**
+ * Renders the authenticated dashboard layout with theme, sidebar, navigation, and page content.
+ *
+ * @returns The dashboard layout element.
+ */
 export default async function RootLayout({
   children,
 }: Readonly<{
